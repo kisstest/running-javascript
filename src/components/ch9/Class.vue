@@ -5,13 +5,16 @@
 </template>
 
 <script>
-import Car from './Car';
+import { Vehicle, Car, Motorcycle } from './Car';
 
 export default {
   mounted() {
-    const bmw = new Car('ford', 123);
-    bmw.shift('D');
-    console.log(bmw);
+    const v = new Vehicle();
+    const c = new Car();
+    const m = new Motorcycle();
+    console.log(c instanceof Vehicle);
+    console.log(v instanceof Vehicle);
+    console.log(m instanceof Vehicle);
   },
 };
 </script>
