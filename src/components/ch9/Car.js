@@ -1,5 +1,6 @@
 class Vehicle {
   constructor() {
+    this._test = null;
     this.passengers = [];
     console.log('Vehicle create');
   }
