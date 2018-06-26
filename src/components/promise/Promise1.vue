@@ -11,32 +11,11 @@ export default {
       value: null,
     };
   },
-  methods: {
-    getURL(URL) {
-      return new Promise((resolve, reject) => {
-        const req = new XMLHttpRequest();
-        req.open('GET', URL, true);
-        req.onload = () => {
-          if (req.status === 200) {
-            resolve(req.responseText);
-          } else {
-            reject(new Error(req.statusText));
-          }
-        };
-        req.onerror = () => {
-          reject(new Error(req.statusText));
-        };
-        req.send();
-      });
-    },
-  },
   mounted() {
-    this.getURL('http://httpbin.org/get').then((value) => {
-      this.value = value;
-      // console.log(value);
-    }).catch((error) => {
-      console.error(error);
-    });
+    this.axios.get('http://httpbin.org/get')
+      .then((response) => {
+        console.log(response);
+      });
   },
 };
 </script>
