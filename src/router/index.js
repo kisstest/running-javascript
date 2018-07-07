@@ -3,7 +3,7 @@ import Router from 'vue-router';
 import HelloWorld from '@/components/HelloWorld';
 import Operator from '@/components/ch5/Operator';
 import Class from '@/components/ch9/Class';
-import Promise1 from '@/components/promise/Promise1';
+import PromiseCh1 from '@/components/promise/PromiseCh1';
 
 Vue.use(Router);
 
@@ -27,8 +27,8 @@ export default new Router({
     },
     {
       path: '/promise/1',
-      name: 'Promise1',
-      component: Promise1,
+      name: 'PromiseCh1',
+      component: PromiseCh1,
     },
   ],
 });

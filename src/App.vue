@@ -1,6 +1,8 @@
 <template>
-  <div id="app">
-    <img src="./assets/logo.png">
+  <div id="app-container" class="container-fluid d-flex flex-column justify-content-center">
+    <div class="vue-logo">
+      <img src="./assets/logo.png">
+    </div>
     <router-view/>
   </div>
 </template>
@@ -11,13 +13,7 @@ export default {
 };
 </script>
 
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+<style lang="scss">
+@import '../node_modules/bootstrap/scss/bootstrap.scss';
+@import '@/assets/style/common.scss';
 </style>
