@@ -47,32 +47,46 @@ export default {
         });
     },
     getUrl() {
-      return this.axios.get('http://httpbin/org/status/400')
-        .then((response) => {
-          console.log(response.data);
-          this.reject = response.data;
-        })
-        .catch((error) => {
-          this.reject = 'Error';
-          console.error(error);
-        });
+      return this.axios.get('http://httpbin/org/status/400');
     },
     getReject() {
-      return new Promise(((resolve, reject) => reject(new Error('오류'))))
-        .catch((error) => {
-          console.error(error.message);
-        });
+      return new Promise(((resolve, reject) => reject(new Error('오류'))));
+    },
+    onRejected() {
+      console.log('onRejected');
+      this.loading = false;
+    },
+    onResolved() {
+      console.log('onResolved');
+      this.loading = false;
     },
   },
   mounted() {
     this.loading = true;
-    this.getData2()
-      .then(this.getData1)
-      .then(this.getUrl)
-      // .then(this.getReject)
-      .then(() => {
-        this.loading = false;
+    // this.getData2()
+    //   .then(this.getData1)
+    //   .then(this.getUrl)
+    //   .then(this.getReject)
+    //   .then(this.onResolved)
+    //   .catch(this.onRejected);
+    Promise.all([this.getData1(), this.getUrl(), this.getData2()])
+      .then(this.onResolved)
+      .catch(this.onRejected);
+
+    function onReady() {
+      return new Promise((resolve) => {
+        const readyState = document.readyState;
+        if (readyState === 'interactive' || readyState === 'complete') {
+          resolve();
+        } else {
+          window.addEventListener('DOMContentLoaded', resolve);
+        }
       });
+    }
+    onReady().then(() => {
+      console.log('DOM fully loaded and parsed');
+    });
+    console.log('==Starting==');
   },
 };
 </script>
