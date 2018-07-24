@@ -1,7 +1,7 @@
 <template>
   <div>
     <button class="btn btn-primary" @click="backToHome">back to home</button>
-    <h2>Promise example & Content loading</h2>
+    <h1>Promise example & Content loading</h1>
     <div v-if="!loading">
       <p>data1: {{ data1 }}</p>
       <p>data2: {{ data2 }}</p>
