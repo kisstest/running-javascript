@@ -1,5 +1,6 @@
 <template>
   <div>
+    <home-button></home-button>
     <h1>Operation</h1>
     <div>
       <p>{{ skipIt }}</p>
@@ -10,7 +11,11 @@
 </template>
 
 <script>
+import HomeButton from '@/components/common/HomeButton';
+
 export default {
+  name: 'Operator',
+  components: { HomeButton },
   data() {
     return {
       skipIt: true,

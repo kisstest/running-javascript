@@ -1,6 +1,10 @@
 html, body {
-  font-size: 12px;
+  height: 100%;
 }
-button {
-  padding: 10px;
+li {
+  list-style: none;
+}
+#app-container {
+  height: 100%;
+  text-align: center;
 }

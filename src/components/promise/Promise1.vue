@@ -1,34 +1,29 @@
 <template>
   <div>
-    <button @click="backToHome">back to home</button>
-    <h1>Promise example & Content loading</h1>
-    <div v-if="!loading">
+    <home-button></home-button>
+    <h1>Promise1</h1>
+    <div>
       <p>data1: {{ data1 }}</p>
       <p>data2: {{ data2 }}</p>
     </div>
-    <vue-content-loading :width="300" :height="100" v-else>
-      <rect rtl x="125" y="0" rx="4" ry="4" width="50" height="3" />
-      <rect rtl x="125" y="5" rx="4" ry="4" width="50" height="3" />
-    </vue-content-loading>
+    <h2>Promise reject</h2>
+    <div>{{ reject }}</div>
   </div>
 </template>
 
 <script>
-import VueContentLoading from 'vue-content-loading';
+import HomeButton from '@/components/common/HomeButton';
 
 export default {
   data() {
     return {
-      loading: false,
       data1: null,
       data2: null,
+      reject: null,
     };
   },
-  components: { VueContentLoading },
+  components: { HomeButton },
   methods: {
-    backToHome() {
-      this.$router.push({ name: 'HelloWorld' });
-    },
     getData1() {
       return this.axios.get('http://httpbin.org/get')
         .then((response) => {
@@ -43,16 +38,30 @@ export default {
           this.data2 = response.data.info.seed;
         });
     },
+    getUrl() {
+      return this.axios.get('http://httpbin/org/status/400');
+    },
+    getReject() {
+      return new Promise(((resolve, reject) => reject(new Error('오류'))));
+    },
+    onRejected() {
+      console.log('onRejected');
+    },
+    onResolved() {
+      console.log('onResolved');
+    },
   },
   mounted() {
-    this.loading = true;
-    // const gdata1 = this.getData1();
-    // const gdata2 = this.getData2();
     this.getData2()
       .then(this.getData1)
-      .then(() => {
-        this.loading = false;
-      });
+      .then(this.getUrl)
+      .then(this.getReject)
+      .then(this.onResolved)
+      .catch(this.onRejected);
+    Promise.all([this.getData1(), this.getUrl(), this.getData2()])
+      .then(this.onResolved)
+      .catch(this.onRejected);
+    console.log('==Starting==');
   },
 };
 </script>
