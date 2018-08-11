@@ -2,6 +2,7 @@
   <div>
     <home-button></home-button>
     <h1>Promise3</h1>
+    <h2>Order result: {{ result }}</h2>
   </div>
 </template>
 
@@ -12,6 +13,7 @@ export default {
   name: 'Promise3',
   data() {
     return {
+      result: '주문이 아직 없습니다.',
       /**
        * 생두 저장소 객체
        * @namespace
@@ -35,11 +37,20 @@ export default {
        */
       roaster: {
         /**
-         * 커피를 주문한다.
-         * @param {string} menu
+         * 생두를 로스팅하여 원두를 반환한다.
+         * @param {string} greenBeans
          * @returns {Promise}
          */
-        excuted() {},
+        excute(beanType) {
+          return this.beansStorage
+            .get(beanType)
+            .then((greenBeans) => {
+              return new Promise((resolve, reject) => {
+                if (greenBeans === '생두') resolve('원두');
+                else reject(new Error('생두가 아닙니다.'));
+              });
+            });
+        },
       },
       /**
        * 커피 하우스 객체
@@ -50,7 +61,16 @@ export default {
          * @param {string} menu
          * @returns {Promise}
          */
-        order() {},
+        order(menu) {
+          return this.roaster
+            .excute('케냐')
+            .then((blackBeans) => {
+              return new Promise((resolve, reject) => {
+                if (menu === '아메리카노' && blackBeans === '원두') resolve('맛있는 아메리카노');
+                else reject(new Error('알 수 없는 타입입니다.'));
+              });
+            });
+        },
       },
     };
   },
@@ -58,6 +78,16 @@ export default {
   methods: {},
   computed: {},
   mouted() {
+    this.$nextTick(() => {
+      this.coffeehouse
+        .order('아메리카노')
+        .then((coffee) => {
+          this.result = `${coffee}가 나왔습니다.`;
+        })
+        .catch((err) => {
+          this.render = err.message;
+        });
+    });
   },
 };
 </script>
