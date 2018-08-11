@@ -17,7 +17,9 @@ export default {
     };
   },
   components: { HomeButton },
-  methods: {},
+  methods: {
+
+  },
   computed: {},
   mounted() {
     console.log('nextTick1');
