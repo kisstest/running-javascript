@@ -67,6 +67,10 @@ export default {
               name: 'Promise3',
               parent: false,
             },
+            {
+              name: 'Promise4',
+              parent: false,
+            },
           ],
         },
       ],
