@@ -7,6 +7,7 @@ import Reduce from '@/components/array/Reduce';
 import Promise1 from '@/components/promise/Promise1';
 import Promise2 from '@/components/promise/Promise2';
 import Promise3 from '@/components/promise/Promise3';
+import Promise4 from '@/components/promise/Promise4';
 
 Vue.use(Router);
 
@@ -42,6 +43,11 @@ export default new Router({
       path: '/promise/3',
       name: 'Promise3',
       component: Promise3,
+    },
+    {
+      path: '/promise/4',
+      name: 'Promise4',
+      component: Promise4,
     },
     {
       path: '/array/reduce',
