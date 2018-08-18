@@ -33,53 +33,60 @@ export default {
   },
   components: { HomeButton },
   methods: {
+    /**
+     * 주문 => 생두(창고) => 로스팅(원두) => 메뉴완성
+     */
+
+    /**
+     * @description start
+     */
     getOrder(menu) {
-      console.log(`menu: ${menu}`);
-      this.orderAmericano(menu)
-        .then((order) => {
-          this.result = order;
+      this.order(menu)
+        .then((coffee) => {
+          this.result = `${coffee}가 나왔습니다.`;
         })
         .catch((err) => {
           this.result = err.message;
         });
     },
+
     /**
-     * @description 주문을 받는다
+     * @description 메뉴 주문
      * @param {String} menu
      * @returns {Promise}
      */
-    orderAmericano(menu) {
-      const promise = new Promise((resolve, reject) => {
-        if (menu === '아메리카노') resolve('생두');
-        else reject(new Error('매장에 없는 메뉴입니다.'));
+    order(menu) {
+      return this.roasting('케냐')
+        .then((greenbean) => {
+          const promise = new Promise((resolve, reject) => {
+            if (menu === '아메리카노' && greenbean === '원두') resolve('맛있는 아메리카노');
+            else reject(new Error('메뉴가 존재하지 않습니다.'));
+          });
+          return promise;
+        });
+    },
+
+    /**
+     * @description 원재료 확인
+     */
+    getBeenStorage(type) {
+      return new Promise((resolve, reject) => {
+        if (type === '케냐') resolve('생두');
+        else reject('알수없는 타입입니다.');
       });
-      return promise;
     },
     /**
-     * @description 생두를 찾는다
-     * @param {String} foodstuffs
-     * @returns {Promise}
+     * @description 로스팅
      */
-    getGreenBean(foodstuffs) {
-      const promise = this.roasting(foodstuffs)
-        .then((resolve, reject) => {
-          if (foodstuffs === '생두') resolve('원두');
-          else reject(new Error('재료가 떨어졌습니다.'));
+    roasting(beenType) {
+      return this.getBeenStorage(beenType)
+        .then((greenbean) => {
+          const promise = new Promise((resolve, reject) => {
+            if (greenbean === '생두') resolve('원두');
+            else reject(new Error('메뉴가 존재하지 않습니다.'));
+          });
+          return promise;
         });
-      return promise;
-    },
-    /**
-     * @description 로스팅한다
-     * @param {String} roast
-     * @returns {Promise}
-     */
-    roasting(roast) {
-      const promise = this.getGreenBean(roast)
-        .then((resolve, reject) => {
-          if (roast === '원두') resolve('맛있는 아메리카노');
-          else reject(new Error('로스터기가 고장났습니다.'));
-        });
-      return promise;
     },
   },
   mounted() {},
