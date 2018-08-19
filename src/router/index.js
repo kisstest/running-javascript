@@ -8,6 +8,7 @@ import Promise1 from '@/components/promise/Promise1';
 import Promise2 from '@/components/promise/Promise2';
 import Promise3 from '@/components/promise/Promise3';
 import Promise4 from '@/components/promise/Promise4';
+import Oauth1 from '@/components/oauth/Oauth1';
 
 Vue.use(Router);
 
@@ -48,6 +49,11 @@ export default new Router({
       path: '/promise/4',
       name: 'Promise4',
       component: Promise4,
+    },
+    {
+      path: '/oauth/1',
+      name: 'Oauth1',
+      component: Oauth1,
     },
     {
       path: '/array/reduce',
