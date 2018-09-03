@@ -2,9 +2,16 @@
   <div>
     <home-button></home-button>
     <h1>Oauth1</h1>
-    <button type="button" class="btn btn-primary"
-      @click="oauth2SignIn"
-    >Oauth 시작하기</button>
+    <div class="container mt-3 mb-3" v-if="result">
+      <div class="row justify-content-sm-center">
+        <div class="col-sm-6">
+          <div class="card">
+            <h5 class="card-title">Result</h5>
+            <p>{{ result }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
     <button type="button" class="btn btn-success"
       @click="trySampleRequest"
     >trySampleRequest</button>
@@ -18,6 +25,7 @@ export default {
   name: 'Oauth1',
   data() {
     return {
+      result: null,
     };
   },
   components: { HomeButton },
@@ -27,6 +35,7 @@ export default {
     trySampleRequest() {
       const params = JSON.parse(localStorage.getItem('oauth2-test-params'));
       if (params && params.access_token) {
+        console.log('trySampleRequest');
         this.axios.get('https://www.googleapis.com/calendar/v3/users/me/calendarList'
           , {
             params: {
@@ -34,20 +43,14 @@ export default {
             },
           })
           .then((response) => {
-            if (response.status === 200) console.log(response);
-            else this.oauth2SignIn();
+            if (response.status === 200) {
+              this.result = response;
+              // this.result = JSON.parse(response, (key, value) => {
+              // });
+            } else {
+              this.oauth2SignIn();
+            }
           });
-        // const xhr = new XMLHttpRequest();
-        // xhr.open('GET', 'https://www.googleapis.com/drive/v3/about?fields=user&' + 'access_token=' + params['access_token']);
-        // xhr.onreadystatechange = function (e) {
-        //   if (xhr.readyState === 4 && xhr.status === 200) {
-        //     console.log(xhr.response);
-        //   } else if (xhr.readyState === 4 && xhr.status === 401) {
-        //     // Token invalid, so prompt for user permission.
-        //     oauth2SignIn();
-        //   }
-        // };
-        // xhr.send(null);
       } else {
         this.oauth2SignIn();
       }
@@ -90,15 +93,21 @@ export default {
     // const YOUR_CLIENT_ID = 'REPLACE_THIS_VALUE';
     // const YOUR_REDIRECT_URI = 'REPLACE_THIS_VALUE';
     const fragmentString = location.hash.substring(1);
+    console.log(`fragmentString: ${fragmentString}`);
 
     // Parse query string to see if page request is coming from OAuth 2.0 server.
     const params = {};
     const regex = /([^&=]+)=([^&]*)/g;
-    let m;
-    while (m = regex.exec(fragmentString)) {
+    // state=pass-through+value&access_token=ya29.GlwNBoX5qgoMiUqjgwopFbNwcr5Uxs3g2BlxG_zbBI1NNUikpdvBaw6V58dBBhR8s9eO4D0WGfSF3gvCjexD6HJ48moVIgFabqenq3adoO-WIJ4Se1H1BjhOdjuClA&token_type=Bearer&expires_in=3600&scope=https://www.googleapis.com/auth/calendar.readonly+https://www.googleapis.com/auth/calendar
+    console.log(regex.exec(fragmentString));
+    const m = regex.exec(fragmentString);
+    console.log(m);
+    if (m instanceof Array) {
+      console.log('params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);');
       params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
     }
     if (Object.keys(params).length > 0) {
+      console.log(1);
       localStorage.setItem('oauth2-test-params', JSON.stringify(params));
       if (params.state && params.state === 'try_sample_request') {
         console.log('trySampleRequest hey');
