@@ -7,14 +7,24 @@
         <div class="col-sm-6">
           <div class="card">
             <h5 class="card-title">Result</h5>
-            <p>{{ result }}</p>
+            <ul class="list-group">
+              <li class="list-group-item"
+                v-for="(item, index) in result.items" :key="index"
+                :style="`backgroundColor: ${item.backgroundColor}`"
+              >{{ item.summary }}</li>
+            </ul>
           </div>
         </div>
       </div>
     </div>
     <button type="button" class="btn btn-success"
+      v-if="!validAccessToken"
+      @click="oauth2SignIn"
+    >Login</button>
+    <button type="button" class="btn btn-primary"
       @click="trySampleRequest"
-    >trySampleRequest</button>
+      v-else
+    >Get Google Calendar Info</button>
   </div>
 </template>
 
@@ -44,7 +54,7 @@ export default {
           })
           .then((response) => {
             if (response.status === 200) {
-              this.result = response;
+              this.result = response.data;
               // this.result = JSON.parse(response, (key, value) => {
               // });
             } else {
@@ -87,6 +97,14 @@ export default {
       // Add form to page and submit it to open the OAuth 2.0 endpoint.
       document.body.appendChild(form);
       form.submit();
+    },
+  },
+  computed: {
+    validAccessToken: {
+      get() {
+        if (!localStorage.getItem('oauth2-test-params')) return false;
+        return true;
+      },
     },
   },
   mounted() {
