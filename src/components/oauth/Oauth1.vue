@@ -11,7 +11,12 @@
               <li class="list-group-item"
                 v-for="(item, index) in result.items" :key="index"
                 :style="`backgroundColor: ${item.backgroundColor}`"
-              >{{ item.summary }}</li>
+              >
+                <button
+                  type="button" class="btn btn-outline-primary"
+                  @click="getEventList(item.id)"
+                >{{ item.summary }}</button>
+              </li>
             </ul>
           </div>
         </div>
@@ -36,6 +41,7 @@ export default {
   data() {
     return {
       result: null,
+      hasAccessToken: null,
     };
   },
   components: { HomeButton },
@@ -43,7 +49,7 @@ export default {
     // If there's an access token, try an API request.
     // Otherwise, start OAuth 2.0 flow.
     trySampleRequest() {
-      const params = JSON.parse(localStorage.getItem('oauth2-test-params'));
+      const params = JSON.parse(localStorage.getItem('oauth2-params'));
       if (params && params.access_token) {
         console.log('trySampleRequest');
         this.axios.get('https://www.googleapis.com/calendar/v3/users/me/calendarList'
@@ -60,6 +66,11 @@ export default {
             } else {
               this.oauth2SignIn();
             }
+          })
+          // TODO: access token이 만료(expired)되면 자동으로 로그인? 체크하기
+          .catch((err) => {
+            console.log(err);
+            this.oauth2SignIn();
           });
       } else {
         this.oauth2SignIn();
@@ -98,18 +109,44 @@ export default {
       document.body.appendChild(form);
       form.submit();
     },
+    getEventList(id) {
+      console.log(id);
+      // const httpRequest = `https://www.googleapis.com/calendar/v3/calendars/${id}/events`;
+      this.axios.get(`https://www.googleapis.com/calendar/v3/calendars/${id}/events`
+        , {
+          params: {
+            calendarId: 'primary',
+            timeMin: (new Date()).toISOString(),
+            showDeleted: false,
+            singleEvents: true,
+            maxResults: 10,
+            orderBy: 'startTime',
+          },
+        })
+        .then((response) => {
+          if (response.status === 200) {
+            console.log(response.data);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
   },
   computed: {
-    validAccessToken: {
-      get() {
-        if (!localStorage.getItem('oauth2-test-params')) return false;
-        return true;
-      },
+    validAccessToken() {
+      return this.hasAccessToken;
     },
   },
   mounted() {
     // const YOUR_CLIENT_ID = 'REPLACE_THIS_VALUE';
     // const YOUR_REDIRECT_URI = 'REPLACE_THIS_VALUE';
+    this.$nextTick(() => {
+      if (localStorage.getItem('oauth2-params')) this.hasAccessToken = true;
+      else this.hasAccessToken = false;
+    });
+
+
     const fragmentString = location.hash.substring(1);
     console.log(`fragmentString: ${fragmentString}`);
 
@@ -126,7 +163,7 @@ export default {
     }
     if (Object.keys(params).length > 0) {
       console.log(1);
-      localStorage.setItem('oauth2-test-params', JSON.stringify(params));
+      localStorage.setItem('oauth2-params', JSON.stringify(params));
       if (params.state && params.state === 'try_sample_request') {
         console.log('trySampleRequest hey');
         this.trySampleRequest();
