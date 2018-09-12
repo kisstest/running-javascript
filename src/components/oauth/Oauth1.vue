@@ -25,7 +25,7 @@
     <button type="button" class="btn btn-success"
       v-if="!validAccessToken"
       @click="oauth2SignIn"
-    >Login</button>
+    >Google Login</button>
     <button type="button" class="btn btn-primary"
       @click="trySampleRequest"
       v-else
@@ -61,19 +61,17 @@ export default {
           .then((response) => {
             if (response.status === 200) {
               this.result = response.data;
-              // this.result = JSON.parse(response, (key, value) => {
-              // });
             } else {
-              this.oauth2SignIn();
+              this.hasAccessToken = false;
             }
           })
           // TODO: access token이 만료(expired)되면 자동으로 로그인? 체크하기
           .catch((err) => {
             console.log(err);
-            this.oauth2SignIn();
+            this.hasAccessToken = false;
           });
       } else {
-        this.oauth2SignIn();
+        this.hasAccessToken = false;
       }
     },
     oauth2SignIn() {
@@ -111,12 +109,16 @@ export default {
     },
     getEventList(id) {
       console.log(id);
-      // const httpRequest = `https://www.googleapis.com/calendar/v3/calendars/${id}/events`;
+      const params = JSON.parse(localStorage.getItem('oauth2-params'));
       this.axios.get(`https://www.googleapis.com/calendar/v3/calendars/${id}/events`
         , {
+          headers: {
+            Authorization: `Bearer ${params.access_token}`,
+          },
           params: {
             calendarId: 'primary',
-            timeMin: (new Date()).toISOString(),
+            // timeMin: (new Date()).toISOString(),
+            timeMax: (new Date('2018-08-01')).toISOString(),
             showDeleted: false,
             singleEvents: true,
             maxResults: 10,
@@ -139,34 +141,41 @@ export default {
     },
   },
   mounted() {
-    // const YOUR_CLIENT_ID = 'REPLACE_THIS_VALUE';
-    // const YOUR_REDIRECT_URI = 'REPLACE_THIS_VALUE';
+    /**
+     * @description 'access token'의 상태에 따라 세가지 형태가 존재한다
+     * 1. 'access token'이 없는경우
+     * 2. 'access token'이 있지만 유효하지 않을경우(token의 유효시간은 기본적으로 1시간이다)
+     * 3. 'access token'이 유효할 경우
+     */
     this.$nextTick(() => {
-      if (localStorage.getItem('oauth2-params')) this.hasAccessToken = true;
-      else this.hasAccessToken = false;
+      if (!localStorage.getItem('oauth2-params')) {
+        this.hasAccessToken = false;
+      } else {
+        this.hasAccessToken = true;
+      }
     });
 
+    {
+      const fragmentString = location.hash.substring(1);
+      console.log(`fragmentString: ${fragmentString}`);
 
-    const fragmentString = location.hash.substring(1);
-    console.log(`fragmentString: ${fragmentString}`);
-
-    // Parse query string to see if page request is coming from OAuth 2.0 server.
-    const params = {};
-    const regex = /([^&=]+)=([^&]*)/g;
-    // state=pass-through+value&access_token=ya29.GlwNBoX5qgoMiUqjgwopFbNwcr5Uxs3g2BlxG_zbBI1NNUikpdvBaw6V58dBBhR8s9eO4D0WGfSF3gvCjexD6HJ48moVIgFabqenq3adoO-WIJ4Se1H1BjhOdjuClA&token_type=Bearer&expires_in=3600&scope=https://www.googleapis.com/auth/calendar.readonly+https://www.googleapis.com/auth/calendar
-    console.log(regex.exec(fragmentString));
-    const m = regex.exec(fragmentString);
-    console.log(m);
-    if (m instanceof Array) {
-      console.log('params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);');
-      params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
-    }
-    if (Object.keys(params).length > 0) {
-      console.log(1);
-      localStorage.setItem('oauth2-params', JSON.stringify(params));
-      if (params.state && params.state === 'try_sample_request') {
-        console.log('trySampleRequest hey');
-        this.trySampleRequest();
+      // Parse query string to see if page request is coming from OAuth 2.0 server.
+      const params = {};
+      const regex = /([^&=]+)=([^&]*)/g;
+      console.log(regex.exec(fragmentString));
+      const m = regex.exec(fragmentString);
+      console.log(m);
+      if (m instanceof Array) {
+        console.log('params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);');
+        params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+      }
+      if (Object.keys(params).length > 0) {
+        console.log(1);
+        localStorage.setItem('oauth2-params', JSON.stringify(params));
+        if (params.state && params.state === 'try_sample_request') {
+          console.log('trySampleRequest hey');
+          this.trySampleRequest();
+        }
       }
     }
   },
