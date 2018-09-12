@@ -73,6 +73,16 @@ export default {
             },
           ],
         },
+        {
+          name: 'Oauth',
+          parent: true,
+          childs: [
+            {
+              name: 'Oauth1',
+              parent: false,
+            },
+          ],
+        },
       ],
     };
   },
