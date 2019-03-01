@@ -83,6 +83,10 @@ export default {
             },
           ],
         },
+        {
+          name: 'Async',
+          parent: false,
+        },
       ],
     };
   },

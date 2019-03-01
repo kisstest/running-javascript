@@ -9,6 +9,7 @@ import Promise2 from '@/components/promise/Promise2';
 import Promise3 from '@/components/promise/Promise3';
 import Promise4 from '@/components/promise/Promise4';
 import Oauth1 from '@/components/oauth/Oauth1';
+import Async from '@/components/async/Async';
 
 Vue.use(Router);
 
@@ -59,6 +60,11 @@ export default new Router({
       path: '/array/reduce',
       name: 'Reduce',
       component: Reduce,
+    },
+    {
+      path: '/async',
+      name: 'Async',
+      component: Async,
     },
   ],
 });
