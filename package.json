@@ -17,7 +17,7 @@
     "@saeris/vue-spinners": "^1.0.8",
     "axios": "^0.18.0",
     "bootstrap": "^4.1.2",
-    "googleapis": "^33.0.0",
+    "googleapis": "^39.1.0",
     "jquery": "^3.3.1",
     "node-sass": "^4.11.0",
     "nprogress": "^0.2.0",
